@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -30,6 +30,21 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- NuGet -->
+    <TargetFrameworks>net472</TargetFrameworks>
+    <PackageId>AbaFileGenerator</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Nick Hoang</Authors>
+    <Company>Code Brewery</Company>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/nick-hoang/aba-file-generator</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/nick-hoang/aba-file-generator</PackageProjectUrl>
+    <PackageTags>ABA, ABA generator</PackageTags>
+    <Description>.NET library to generate an aba file for bulk banking transactions with Australian banks.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Product>ABA File Generator</Product>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -41,9 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
     <Compile Include="AbaFileGenerator.cs" />
-    <Compile Include="Models\Transaction.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\Transaction.cs" />    
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
