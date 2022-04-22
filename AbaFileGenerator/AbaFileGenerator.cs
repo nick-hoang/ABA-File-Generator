@@ -9,10 +9,15 @@ namespace AbaFileGenerator
 {
     public class AbaFileGenerator
     {
+        #region Const
         const string DESCRIPTIVE_TYPE = "0";
         const string DETAIL_TYPE = "1";
         const string BATCH_TYPE = "7";
-        
+        private const char PaddingChar = ' ';
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// running total of credits in file
         /// </summary>
@@ -57,13 +62,17 @@ namespace AbaFileGenerator
         /// Default is false
         /// </summary>
         public bool IncludeProcessingTime { get; set; }
-        #endregion
 
+        public bool IncludeTotalRecord { get; set; } = true;
+        #endregion
 
         /// <summary>
         /// aba file string
         /// </summary>
         public string AbaString { get; set; }
+
+        #endregion
+
         /// <summary>
         /// Validates that the BSB is 6 digits with a dash in the middle: 123-456
         /// </summary>
@@ -109,7 +118,11 @@ namespace AbaFileGenerator
             }
 
             NumberRecords = transactions.Count();
-            addBatchControlRecord();
+
+            if (IncludeTotalRecord)
+            {
+                addTotalRecord();
+            }
 
             result.IsValid = true;
             result.Data = this;
@@ -134,10 +147,10 @@ namespace AbaFileGenerator
             if (IncludeAccountNumberInDescriptiveRecord)
             {
                 // BSB
-                line += Bsb;
+                line += PadRight(Bsb, 7, PaddingChar);
 
                 // Account Number
-                line += AccountNumber.PadLeft(9, ' ');
+                line += PadLeft(AccountNumber, 9, PaddingChar);
 
                 // Reserved - must be a single blank space
                 line += " ";
@@ -145,32 +158,32 @@ namespace AbaFileGenerator
             else
             {
                 // Reserved - must be 17 blank spaces
-                line += "".PadRight(17, ' ');
+                line += PadRight("", 17, PaddingChar);
             }
 
             // Sequence Number
             line += "01";
 
             // Bank Name
-            line += BankName;
+            line += PadRight(BankName, 3, PaddingChar);
 
             // Reserved - must be seven blank spaces
-            line += "".PadRight(7, ' ');
+            line += PadRight("", 7, PaddingChar);
 
             // User Name
-            line += UserName.PadRight(26, ' ');
+            line += PadRight(UserName, 26, PaddingChar);
 
             // User ID
-            line += DirectEntryUserId;
+            line += PadRight(DirectEntryUserId, 6, PaddingChar);
 
             // File Description
-            line += Description.PadRight(12, ' ');
+            line += PadRight(Description, 12, PaddingChar);
 
             // Processing Date
-            line += ProcessingDate.ToString(IncludeProcessingTime? "ddMMyyHHmm" : "ddMMyy");
+            line += ProcessingDate.ToString(IncludeProcessingTime ? "ddMMyyHHmm" : "ddMMyy");
 
             // Reserved - 40 blank spaces
-            line += "".PadRight(IncludeProcessingTime ? 36 : 40, ' ');
+            line += PadRight("", IncludeProcessingTime ? 36 : 40, PaddingChar);
 
             addLine(line);
         }
@@ -185,39 +198,39 @@ namespace AbaFileGenerator
             var line = DETAIL_TYPE;
 
             // BSB
-            line += transaction.Bsb;
+            line += PadRight(transaction.Bsb, 7, PaddingChar);
 
             // Account Number
-            line += transaction.AccountNumber.PadLeft(9, ' ');
+            line += PadLeft(transaction.AccountNumber, 9, '0');
 
             // Indicator
-            line += transaction.Indicator != null ? transaction.Indicator.ToString() : " ";
+            line += transaction.Indicator != null ? transaction.Indicator.ToString() : PaddingChar.ToString();
 
             // Transaction Code
             line += ((int)transaction.TransactionCode).ToString();
 
             // Transaction Amount
-            line += transaction.Amount.ToString().PadLeft(10, '0');
+            line += PadLeft(transaction.Amount.ToString(), 10, '0');
 
             // Account Name
-            line += transaction.AccountName.PadRight(32, ' ');
+            line += PadRight(transaction.AccountName, 32, PaddingChar);
 
             // Lodgement Reference
-            line += transaction.Reference.PadRight(18, ' ');
+            line += PadRight(transaction.Reference, 18, PaddingChar);
 
             // Trace BSB - already validated
-            line += Bsb;
+            line += PadRight(Bsb, 7, PaddingChar);
 
             // Trace Account Number - already validated
-            line += transaction.AccountNumber.PadLeft(9, ' ');
+            line += PadLeft(transaction.AccountNumber, 9, PaddingChar);
 
             // Name of remitter (appears on target's bank statement; must not be blank but some banks will replace with name fund account is held in).
             // Remitter Name - already validated
             var remitter = transaction.Remitter ?? Remitter;
-            line += remitter.PadRight(16, ' ');
+            line += PadRight(remitter, 16, PaddingChar);
 
             // Withholding amount
-            line += transaction.TaxWithholding.ToString().PadLeft(8, '0');
+            line += PadLeft(transaction.TaxWithholding.ToString(), 8, '0');
 
             addLine(line);
         }
@@ -225,7 +238,7 @@ namespace AbaFileGenerator
         /// <summary>
         /// The bottom line, File Total Record. https://github.com/mjec/aba/blob/master/sample-with-comments.aba
         /// </summary>
-        private void addBatchControlRecord()
+        private void addTotalRecord()
         {
             var line = BATCH_TYPE;
 
@@ -233,25 +246,25 @@ namespace AbaFileGenerator
             line += "999-999";
 
             // Reserved - must be twelve blank spaces            
-            line += "".PadRight(12, ' ');
+            line += PadRight("", 12, PaddingChar);
 
             // Batch Net Total
-            line += GetBatchNetTotal().ToString().PadLeft(10, '0');
+            line += PadLeft(GetBatchNetTotal().ToString(), 10, '0');
 
             // Batch Credits Total
-            line += CreditTotal.ToString().PadLeft(10, '0');
+            line += PadLeft(CreditTotal.ToString(), 10, '0');
 
             // Batch Debits Total
-            line += DebitTotal.ToString().PadLeft(10, '0');
+            line += PadLeft(DebitTotal.ToString(), 10, '0');
 
             // Reserved - must be 24 blank spaces
-            line += "".PadRight(24, ' ');
+            line += PadRight("", 24, PaddingChar);
 
             // Number of records
-            line += NumberRecords.ToString().PadLeft(6, '0');
+            line += PadLeft(NumberRecords.ToString(), 6, '0');
 
             // Reserved - must be 40 blank spaces
-            line += "".PadRight(40, ' ');
+            line += PadRight("", 40, PaddingChar);
 
             addLine(line, false);
         }
@@ -266,43 +279,69 @@ namespace AbaFileGenerator
         /// </summary>
         /// <returns></returns>
         private string validateDescriptiveRecord()
-        {            
-            if (!_bsbRegex.IsMatch(Bsb))
+        {
+            if (!string.IsNullOrEmpty(Bsb) && !_bsbRegex.IsMatch(Bsb))
             {
                 return "Descriptive record bsb is invalid. Required format is 000-000.";
             }
 
-            if (!new Regex(@"^[\d]{0,9}$").IsMatch(AccountNumber))
+            if (!string.IsNullOrEmpty(AccountNumber) && !new Regex(@"^[\d]{0,9}$").IsMatch(AccountNumber))
             {
                 return "Descriptive record account number is invalid. Must be up to 9 digits only.";
             }
 
-            if (string.IsNullOrEmpty(BankName) || !new Regex(@"^[A-Z]{3}$").IsMatch(BankName))
+            if (!string.IsNullOrEmpty(BankName) && !new Regex(@"^[A-Z]{3}$").IsMatch(BankName))
             {
-                return "Descriptive record bank name is required. Must be capital letter abbreviation of length 3.";
+                return "Descriptive record bank name must be capital letter abbreviation of length 3.";
             }
 
-            if (string.IsNullOrEmpty(UserName) || !new Regex(@"^[A-Za-z\s+]{0,26}$").IsMatch(UserName))
+            if (!string.IsNullOrEmpty(UserName) && !new Regex(@"^[A-Za-z\s+]{0,26}$").IsMatch(UserName))
             {
-                return "Descriptive record user name is required and Must be letters only and up to 26 characters long.";
+                return "Descriptive record user name must be letters only and up to 26 characters long.";
             }
 
-            if (string.IsNullOrEmpty(Remitter))
-            {
-                return "Remitter name is required";
-            }
+            //if (string.IsNullOrEmpty(Remitter))
+            //{
+            //    return "Remitter name is required";
+            //}
 
-            if (!new Regex(@"^[\d]{6}$").IsMatch(DirectEntryUserId))
+            if (!string.IsNullOrEmpty(DirectEntryUserId) && !new Regex(@"^[\d]{6}$").IsMatch(DirectEntryUserId))
             {
                 return "Descriptive record direct entiry user ID is invalid. Must be 6 digits long.";
             }
 
-            if (!new Regex(@"^[A-Za-z\s]{0,12}$").IsMatch(Description))
+            if (!string.IsNullOrEmpty(Description) && !new Regex(@"^[A-Za-z\s]{0,12}$").IsMatch(Description))
             {
                 return "Descriptive record description is invalid. Must be letters only and up to 12 characters long.";
             }
 
             return string.Empty;
+        }
+
+        private string PadLeft(string input, int numberOfChar, char paddingChar)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty.PadLeft(numberOfChar, paddingChar);
+            }
+            if (input.Length > numberOfChar)
+            {
+                return input.Substring(0, numberOfChar).PadLeft(numberOfChar, paddingChar);
+            }
+            return input.PadLeft(numberOfChar, paddingChar);
+        }
+
+        private string PadRight(string input, int numberOfChar, char paddingChar)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty.PadRight(numberOfChar, paddingChar);
+            }
+            if (input.Length > numberOfChar)
+            {
+                return input.Substring(0, numberOfChar).PadRight(numberOfChar, paddingChar);
+            }
+            return input.PadRight(numberOfChar, paddingChar);
         }
 
         #endregion
