@@ -34,7 +34,7 @@
     <!-- NuGet -->
     <TargetFramework>net472</TargetFramework>
     <PackageId>AbaFileGenerator</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Nick Hoang</Authors>
     <Company>Code Brewery</Company>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -44,6 +44,8 @@
     <Description>.NET library to generate an aba file for bulk banking transactions with Australian banks.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>ABA File Generator</Product>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />    
