@@ -14,7 +14,7 @@ It's based on this repo: https://github.com/simonblee/aba-file-generator
 ```csharp
 using AbaFileGenerator;
 
-var generator = new AbaFileGenerator
+var generator = new AbaGenerator
             {
                 Bsb = "012-012", //ANZANZ E Trade Support
                 AccountNumber = "12345678",
@@ -23,7 +23,9 @@ var generator = new AbaFileGenerator
                 Remitter = "From some guy",
                 DirectEntryUserId = "999999",
                 Description = "Payroll",
-                IncludeAccountNumberInDescriptiveRecord = false
+                IncludeAccountNumberInDescriptiveRecord = false,
+                IncludeProcessingTime = false,
+                IncludeTotalRecord = true,
             };
 var result = generator.Generate([transactions]);
 if(result.IsValid){
