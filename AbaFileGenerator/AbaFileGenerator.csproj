@@ -32,7 +32,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <!-- NuGet -->
-    <TargetFrameworks>net472</TargetFrameworks>
+    <TargetFramework>net472</TargetFramework>
     <PackageId>AbaFileGenerator</PackageId>
     <Version>1.0.0</Version>
     <Authors>Nick Hoang</Authors>
@@ -46,6 +46,9 @@
     <Product>ABA File Generator</Product>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />    
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,12 +57,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-  </ItemGroup>
+  </ItemGroup>  
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-    <Compile Include="AbaFileGenerator.cs" />
-    <Compile Include="Models\Transaction.cs" />    
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

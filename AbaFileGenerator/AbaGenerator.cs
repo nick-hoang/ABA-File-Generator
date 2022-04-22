@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AbaFileGenerator
 {
-    public class AbaFileGenerator
+    public class AbaGenerator
     {
         #region Const
         const string DESCRIPTIVE_TYPE = "0";
@@ -78,9 +78,9 @@ namespace AbaFileGenerator
         /// </summary>
         private readonly Regex _bsbRegex = new Regex(@"^\d{3}-\d{3}$");
 
-        public AbaFileGeneratorResult Generate(IEnumerable<Transaction> transactions)
+        public AbaGeneratorResult Generate(IEnumerable<Transaction> transactions)
         {
-            var result = new AbaFileGeneratorResult();
+            var result = new AbaGeneratorResult();
             if (transactions == null)
             {
                 result.FailReason = "No transactions";
@@ -347,10 +347,10 @@ namespace AbaFileGenerator
         #endregion
     }
 
-    public class AbaFileGeneratorResult
+    public class AbaGeneratorResult
     {
         public bool IsValid { get; set; }
         public string FailReason { get; set; }
-        public AbaFileGenerator Data { get; set; }
+        public AbaGenerator Data { get; set; }
     }
 }
