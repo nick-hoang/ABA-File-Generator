@@ -222,7 +222,7 @@ namespace AbaFileGenerator
             line += PadRight(Bsb, 7, PaddingChar);
 
             // Trace Account Number - already validated
-            line += PadLeft(transaction.AccountNumber, 9, PaddingChar);
+            line += PadLeft(AccountNumber, 9, PaddingChar);
 
             // Name of remitter (appears on target's bank statement; must not be blank but some banks will replace with name fund account is held in).
             // Remitter Name - already validated
